@@ -1,6 +1,13 @@
+# ── Root level ignores ──────────────────────────────────────────────
+# Accidental npm installs at repo root
+node_modules/
+package.json
+package-lock.json
+
+# ── Backend (Java/Maven) ─────────────────────────────────────────────
 HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
+backend/target/
+!backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -22,12 +29,21 @@ target/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+# ── Frontend (Node/Vite) ─────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.env.local
+
+# ── OS / IDE ─────────────────────────────────────────────────────────
+.DS_Store
 .vscode/
+*.suo
+*.sw?
