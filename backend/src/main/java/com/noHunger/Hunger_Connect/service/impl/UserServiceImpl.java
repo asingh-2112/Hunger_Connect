@@ -87,11 +87,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
-    @Override
-    public UserDetailsService loadByEmail(String email) {
-        return this;
-    }
-
     private UserResponse toResponse(User user) {
         Double avgRating = ratingRepository.findAverageRatingByUser(user.getId()).orElse(null);
         return UserResponse.builder()
