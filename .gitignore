@@ -1,8 +1,8 @@
 # ── Root level ignores ──────────────────────────────────────────────
-# Accidental npm installs at repo root
-node_modules/
-package.json
-package-lock.json
+# Accidental npm installs at repo root (use /prefix to match root only)
+/node_modules/
+/package.json
+/package-lock.json
 
 # ── Backend (Java/Maven) ─────────────────────────────────────────────
 HELP.md
