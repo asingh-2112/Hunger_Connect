@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "../../../components/layout/Layout";
-import { Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiPlusCircle } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
@@ -77,13 +76,13 @@ function DonorDashboard() {
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link to="/createblog">
-                                <Button variant="gradient" color="teal" className="flex items-center gap-2 shadow-md">
+                                <button className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
                                     <Article fontSize="small" /> Create Blog
-                                </Button>
+                                </button>
                             </Link>
-                            <Button variant="gradient" color="red" className="shadow-md" onClick={handleLogout}>
+                            <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
                                 Logout
-                            </Button>
+                            </button>
                         </div>
                     </div>
 
@@ -114,9 +113,9 @@ function DonorDashboard() {
                             <div className="text-center py-8">
                                 <Fastfood className="text-4xl mx-auto text-gray-400 mb-2" />
                                 <Typography variant="h6" className="text-gray-500">No donations yet</Typography>
-                                <Button variant="gradient" color="blue" className="mt-4" onClick={() => setOpen(true)}>
+                                <button onClick={() => setOpen(true)} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-lg transition-colors">
                                     Make your first donation
-                                </Button>
+                                </button>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -155,15 +154,12 @@ function DonorDashboard() {
                                                     color={STATUS_COLOR[donation.status] || "default"}
                                                     size="small"
                                                 />
-                                                <Button
-                                                    variant="gradient"
-                                                    color="red"
-                                                    size="sm"
+                                                <button
                                                     onClick={(e) => openDeleteDialog(e, donation)}
-                                                    className="shadow-sm"
+                                                    className="bg-red-500 hover:bg-red-600 text-white text-xs font-medium px-3 py-1 rounded-lg shadow-sm transition-colors"
                                                 >
                                                     Delete
-                                                </Button>
+                                                </button>
                                             </div>
                                         </div>
                                     </Card>
@@ -182,15 +178,14 @@ function DonorDashboard() {
                         <Typography className="mt-4">Are you sure you want to delete this donation?</Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setConfirmOpen(false)} variant="outlined" color="gray">Cancel</Button>
-                        <Button
+                        <button onClick={() => setConfirmOpen(false)} className="border border-gray-400 text-gray-700 font-medium px-4 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
+                        <button
                             onClick={handleDeleteDonation}
-                            variant="gradient"
-                            color="red"
                             disabled={deleteMutation.isPending}
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1.5 rounded-lg disabled:opacity-60 transition-colors"
                         >
                             {deleteMutation.isPending ? "Deleting..." : "Delete"}
-                        </Button>
+                        </button>
                     </DialogActions>
                 </Dialog>
 

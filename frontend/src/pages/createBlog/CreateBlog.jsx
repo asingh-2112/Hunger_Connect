@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Button, Textarea } from "@material-tailwind/react";
 import Layout from "../../components/layout/Layout";
 import { FiUpload, FiX, FiArrowLeft } from "react-icons/fi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -125,27 +124,26 @@ function CreateBlog() {
 
               <div className="mb-8">
                 <label className="block text-sm font-medium mb-3 text-gray-700">Your Story</label>
-                <Textarea
+                <textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
                   placeholder="Share your thoughts, experiences, or news with the community..."
-                  className="w-full !border !border-gray-300 focus:!border-blue-400 rounded-lg p-4"
+                  className="w-full border border-gray-300 focus:border-blue-400 rounded-lg p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
                   rows={8}
                 />
               </div>
 
               <div className="flex justify-end space-x-3">
-                <Button variant="text" color="blue-gray" onClick={() => navigate("/")} disabled={isLoading}>
+                <button type="button" onClick={() => navigate("/")} disabled={isLoading} className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-60">
                   Cancel
-                </Button>
-                <Button
+                </button>
+                <button
                   type="submit"
-                  color="blue"
                   disabled={isLoading || !caption.trim()}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md hover:shadow-lg transition-all"
+                  className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all disabled:opacity-60"
                 >
                   {isLoading ? "Publishing..." : "Publish Now"}
-                </Button>
+                </button>
               </div>
             </form>
           </div>

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import Layout from '../../../components/layout/Layout'
 import myContext from '../../../context/data/myContext';
-import { Button } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Dashboard() {
@@ -52,36 +51,28 @@ function Dashboard() {
                         <div className=" flex gap-2 mt-2">
                             <Link to={'/createblog'}>
                                 <div className=" mb-2">
-                                    <Button
+                                    <button
                                         style={{
-                                            background: mode === 'dark'
-                                                ? 'rgb(226, 232, 240)'
-                                                : 'rgb(30, 41, 59)',
-                                            color: mode === 'dark'
-                                                ? 'black'
-                                                : 'white'
+                                            background: mode === 'dark' ? 'rgb(226, 232, 240)' : 'rgb(30, 41, 59)',
+                                            color: mode === 'dark' ? 'black' : 'white'
                                         }}
-                                        className='px-8 py-2'
+                                        className='px-8 py-2 rounded-lg font-medium'
                                     >
                                         Create Blog
-                                    </Button>
+                                    </button>
                                 </div>
                             </Link>
                             <div className="mb-2">
-                                <Button
+                                <button
                                     onClick={logout}
                                     style={{
-                                        background: mode === 'dark'
-                                            ? 'rgb(226, 232, 240)'
-                                            : 'rgb(30, 41, 59)',
-                                        color: mode === 'dark'
-                                            ? 'black'
-                                            : 'white'
+                                        background: mode === 'dark' ? 'rgb(226, 232, 240)' : 'rgb(30, 41, 59)',
+                                        color: mode === 'dark' ? 'black' : 'white'
                                     }}
-                                    className='px-8 py-2'
+                                    className='px-8 py-2 rounded-lg font-medium'
                                 >
                                     Logout
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </div>

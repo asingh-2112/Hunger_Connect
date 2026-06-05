@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Input, Select, Option } from "@material-tailwind/react";
 import toast from "react-hot-toast";
 import DonationDetailDialog from "../donationDetailDialog/DonationDetailDialog";
 import { donationApi } from "../../api/donation";
@@ -57,28 +56,23 @@ const DonationList = () => {
                 </h1>
 
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 gap-4 mb-6">
-                    <Input
+                    <input
                         type="text"
-                        label="Search by City"
+                        placeholder="Search by City"
                         value={cityFilter}
                         onChange={(e) => setCityFilter(e.target.value)}
-                        className="!bg-white"
-                        containerProps={{ className: "min-w-0" }}
-                        color="purple"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
                     />
-                    <Select
-                        label="Food Preference"
+                    <select
                         value={foodFilter}
-                        onChange={(val) => setFoodFilter(val)}
-                        className="!bg-white"
-                        color="purple"
-                        containerProps={{ className: "min-w-0" }}
+                        onChange={(e) => setFoodFilter(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
                     >
-                        <Option value="">All</Option>
-                        <Option value="VEG">Veg</Option>
-                        <Option value="NON_VEG">Non-Veg</Option>
-                        <Option value="BOTH">Both</Option>
-                    </Select>
+                        <option value="">All</option>
+                        <option value="VEG">Veg</option>
+                        <option value="NON_VEG">Non-Veg</option>
+                        <option value="BOTH">Both</option>
+                    </select>
                 </div>
 
                 {isLoading ? (
@@ -133,14 +127,13 @@ const DonationList = () => {
                                             </td>
                                             <td className="px-4 sm:px-6 py-4">
                                                 {donation.status === "PENDING" ? (
-                                                    <Button
+                                                    <button
                                                         onClick={(e) => handleAccept(e, donation.id)}
                                                         disabled={acceptMutation.isPending}
-                                                        className="bg-gradient-to-r from-green-400 to-green-600 text-white px-3 py-1 rounded-lg text-xs sm:text-sm"
-                                                        ripple={false}
+                                                        className="bg-gradient-to-r from-green-400 to-green-600 text-white px-3 py-1 rounded-lg text-xs sm:text-sm disabled:opacity-60"
                                                     >
                                                         Accept
-                                                    </Button>
+                                                    </button>
                                                 ) : (
                                                     <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
                                                         Accepted

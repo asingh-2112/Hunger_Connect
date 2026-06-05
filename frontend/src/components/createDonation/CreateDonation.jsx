@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Dialog, DialogBody, Button, Input, Select, Option, Textarea, Typography } from "@material-tailwind/react";
+import { Dialog, DialogContent } from "@mui/material";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { donationApi } from "../../api/donation";
@@ -141,12 +141,10 @@ const CreateDonation = ({ open, setOpen }) => {
     }, [formData.state]);
 
     return (
-        <Dialog open={open} handler={() => {}} size="lg" className="rounded-lg">
-            <DialogBody className="p-4 md:p-6 bg-gradient-to-br from-gray-50 to-white">
+        <Dialog open={open} onClose={() => {}} maxWidth="md" fullWidth PaperProps={{ className: "rounded-lg" }}>
+            <DialogContent className="p-4 md:p-6 bg-gradient-to-br from-gray-50 to-white">
                 <div className="flex justify-between items-center mb-6">
-                    <Typography variant="h4" color="blue-gray" className="font-bold">
-                        Food Donation Form
-                    </Typography>
+                    <p className="text-xl font-bold text-gray-800">Food Donation Form</p>
                     <button onClick={() => setOpen(false)} className="text-gray-600 hover:text-gray-900">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -207,7 +205,7 @@ const CreateDonation = ({ open, setOpen }) => {
                         />
                     )}
                 </div>
-            </DialogBody>
+            </DialogContent>
         </Dialog>
     );
 };

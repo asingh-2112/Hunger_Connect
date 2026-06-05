@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { FaBox, FaTruckLoading } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@material-tailwind/react";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
 import LayoutRegLog from "../../components/layoutRegLog/LayoutRegLog";
@@ -195,7 +194,7 @@ const Register = () => {
                     {errors.donorType && <p className="text-red-500 text-sm">{errors.donorType}</p>}
                   </div>
                   <div>
-                    <Input type="text" name="name" label="Full Name" value={formData.name} onChange={handleChange} className="w-full" required />
+                    <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
                     {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                   </div>
                 </>
@@ -217,7 +216,7 @@ const Register = () => {
                     {errors.organizationType && <p className="text-red-500 text-sm">{errors.organizationType}</p>}
                   </div>
                   <div>
-                    <Input type="text" name="organizationName" label="Organization Name" onChange={handleChange} value={formData.organizationName} className="w-full" required />
+                    <input type="text" name="organizationName" placeholder="Organization Name" onChange={handleChange} value={formData.organizationName} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
                     {errors.organizationName && <p className="text-red-500 text-sm">{errors.organizationName}</p>}
                   </div>
                 </>
@@ -244,16 +243,16 @@ const Register = () => {
                 {(statesAndDistricts[formData.state] || []).map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
 
-              <Input type="text" name="city" label="City" onChange={handleChange} value={formData.city} className="w-full" required />
+              <input type="text" name="city" placeholder="City" onChange={handleChange} value={formData.city} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
               {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
 
-              <Input name="locality" label="Locality / Area" value={formData.locality} onChange={handleChange} required />
-              <Input name="street" label="Plot No. / Street Address" value={formData.street} onChange={handleChange} required />
+              <input name="locality" placeholder="Locality / Area" value={formData.locality} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
+              <input name="street" placeholder="Plot No. / Street Address" value={formData.street} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
 
-              <Input type="text" name="pinCode" label="Pin Code" onChange={handleChange} value={formData.pinCode} className="w-full" required />
+              <input type="text" name="pinCode" placeholder="Pin Code" onChange={handleChange} value={formData.pinCode} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
               {errors.pinCode && <p className="text-red-500 text-sm">{errors.pinCode}</p>}
 
-              <Input type="text" name="phone" label="Phone Number" onChange={handleChange} value={formData.phone} className="w-full" required />
+              <input type="text" name="phone" placeholder="Phone Number" onChange={handleChange} value={formData.phone} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
               {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
 
               <button type="button" onClick={nextStep} className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
@@ -267,12 +266,12 @@ const Register = () => {
               <h2 className="text-xl font-semibold text-center">Account Details</h2>
 
               <div>
-                <Input type="email" name="email" label="Email" value={formData.email} onChange={handleChange} className="w-full" required />
+                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" required />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
 
               <div className="relative">
-                <Input type={showPassword ? "text" : "password"} name="password" label="Password" onChange={handleChange} className="w-full" />
+                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-gray-500">
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -280,7 +279,7 @@ const Register = () => {
               </div>
 
               <div className="relative">
-                <Input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" label="Re-enter Password" onChange={handleChange} className="w-full" />
+                <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" placeholder="Re-enter Password" onChange={handleChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-3 text-gray-500">
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>

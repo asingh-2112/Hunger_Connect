@@ -1,5 +1,3 @@
-import { Button, Textarea, Typography } from "@material-tailwind/react";
-
 const MessageStep = ({
     formData,
     handleInputChange,
@@ -8,30 +6,25 @@ const MessageStep = ({
     errors,
 }) => (
     <div className="space-y-3 md:space-y-4">
-        <Typography variant="h5" color="blue-gray" className="mb-4">
-            Final Details
-        </Typography>
+        <p className="text-lg font-semibold text-gray-700 mb-4">Final Details</p>
 
-        <Textarea
+        <textarea
             name="message"
-            label="Additional Message (Optional)"
+            placeholder="Additional Message (Optional)"
             value={formData.message || ""}
             onChange={handleInputChange}
-            error={!!errors.message}
+            rows={4}
+            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none ${errors.message ? "border-red-400" : "border-gray-300"}`}
         />
-        {errors.message && (
-            <Typography variant="small" color="red" className="mt-1">
-                {errors.message}
-            </Typography>
-        )}
+        {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
 
         <div className="flex flex-col md:flex-row justify-between gap-2 pt-4">
-            <Button variant="outlined" onClick={handlePreviousStep} className="w-full md:w-auto">
+            <button onClick={handlePreviousStep} className="w-full md:w-auto border border-gray-400 text-gray-700 font-medium px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                 Back
-            </Button>
-            <Button onClick={handleSubmit} color="green" className="w-full md:w-auto">
+            </button>
+            <button onClick={handleSubmit} className="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded-lg transition-colors">
                 Submit Donation
-            </Button>
+            </button>
         </div>
     </div>
 );

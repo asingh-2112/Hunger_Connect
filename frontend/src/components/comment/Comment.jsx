@@ -1,4 +1,3 @@
-import { Button } from '@material-tailwind/react'
 import React, { useContext } from 'react'
 import myContext from '../../context/data/myContext';
 
@@ -56,19 +55,16 @@ function Comment({ addComment, commentText, setcommentText, allComment, fullName
           </div>
           {/* Button  */}
           <div className="">
-            <Button
+            <button
               onClick={addComment}
               style={{
-                background: mode === 'dark'
-                  ? 'rgb(226, 232, 240)'
-                  : 'rgb(30, 41, 59)',
-                color: mode === 'dark'
-                  ? 'rgb(30, 41, 59)'
-                  : 'rgb(226, 232, 240)'
+                background: mode === 'dark' ? 'rgb(226, 232, 240)' : 'rgb(30, 41, 59)',
+                color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'rgb(226, 232, 240)'
               }}
+              className="px-8 py-2 rounded-lg font-medium"
             >
               Post comment
-            </Button>
+            </button>
           </div>
         </form>
 

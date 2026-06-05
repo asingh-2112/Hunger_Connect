@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Navbar, IconButton, Avatar, Collapse, Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import ShareDialogBox from "../shareDialogBox/ShareDialogBox";
 import { useAuth } from "../../hooks/useAuth";
@@ -24,74 +23,51 @@ export default function Nav() {
         navigate("/");
     };
 
-    const navList = (
-        <ul className="mb-4 mt-2 flex flex-col gap-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+    const navLinks = (
+        <ul className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6 mb-4 mt-2 lg:mb-0 lg:mt-0">
             <li className="p-1 font-medium">
-                <Link to="/" className="flex items-center text-lg text-white hover:text-yellow-300 transition-colors duration-300">
-                    Home
-                </Link>
+                <Link to="/" className="flex items-center text-lg text-white hover:text-yellow-300 transition-colors duration-300">Home</Link>
             </li>
             <li className="p-1 font-medium">
-                <Link to="/allblogs" className="flex items-center text-lg text-white hover:text-yellow-300 transition-colors duration-300">
-                    Blogs
-                </Link>
+                <Link to="/allblogs" className="flex items-center text-lg text-white hover:text-yellow-300 transition-colors duration-300">Blogs</Link>
             </li>
         </ul>
     );
 
     return (
-        <Navbar
-            className="sticky top-0 z-50 h-max max-w-full rounded-none border-none py-3 px-6 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg"
-            blurred={false}
-            fullWidth
-        >
+        <nav className="sticky top-0 z-50 w-full py-3 px-6 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
             <div className="flex items-center justify-between">
                 <Link to="/" className="flex items-center">
                     <img className="h-10" src="https://i.imgur.com/gEHDYl2.png" alt="Hunger Connect logo" />
                 </Link>
 
                 <div className="hidden lg:flex items-center gap-6">
-                    {navList}
+                    {navLinks}
                     <div className="flex items-center gap-4">
                         <ShareDialogBox />
                         {isAuthenticated ? (
                             <div className="flex items-center gap-2">
                                 <Link to={avatarRedirectPath}>
-                                    <Avatar
+                                    <img
                                         src={user?.profileImageUrl || 'https://cdn-icons-png.flaticon.com/128/3135/3135715.png'}
                                         alt={user?.name || "User"}
-                                        size="sm"
-                                        className="cursor-pointer border-2 border-white hover:border-yellow-300 transition-all"
+                                        className="w-8 h-8 rounded-full cursor-pointer border-2 border-white hover:border-yellow-300 transition-all object-cover"
                                     />
                                 </Link>
-                                <Button
-                                    variant="text"
-                                    size="sm"
-                                    className="text-white hover:bg-white/20"
-                                    onClick={handleLogout}
-                                >
+                                <button onClick={handleLogout} className="text-white text-sm px-3 py-1 rounded hover:bg-white/20 transition-colors">
                                     Logout
-                                </Button>
+                                </button>
                             </div>
                         ) : (
-                            <Button
-                                variant="filled"
-                                size="sm"
-                                color="yellow"
-                                onClick={() => navigate('/adminlogin')}
-                            >
+                            <button onClick={() => navigate('/adminlogin')} className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold text-sm px-4 py-1.5 rounded-lg transition-colors">
                                 Sign In
-                            </Button>
+                            </button>
                         )}
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4 lg:hidden">
-                    <IconButton
-                        variant="text"
-                        onClick={() => setOpenNav(!openNav)}
-                        className="text-white hover:bg-white/20"
-                    >
+                    <button onClick={() => setOpenNav(!openNav)} className="text-white hover:bg-white/20 p-1 rounded">
                         {openNav ? (
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -101,23 +77,22 @@ export default function Nav() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         )}
-                    </IconButton>
+                    </button>
                 </div>
             </div>
 
-            <Collapse open={openNav} className="lg:hidden">
-                <div className="pt-4 pb-2">
-                    {navList}
+            {openNav && (
+                <div className="lg:hidden pt-4 pb-2">
+                    {navLinks}
                     <div className="flex items-center justify-between pt-4 border-t border-white/20">
                         <ShareDialogBox mobile={true} />
                         {isAuthenticated ? (
                             <div className="flex items-center gap-2">
                                 <Link to={avatarRedirectPath}>
-                                    <Avatar
+                                    <img
                                         src={user?.profileImageUrl || 'https://cdn-icons-png.flaticon.com/128/3135/3135715.png'}
                                         alt="User"
-                                        size="sm"
-                                        className="border-2 border-white"
+                                        className="w-8 h-8 rounded-full border-2 border-white object-cover"
                                     />
                                 </Link>
                                 <button onClick={handleLogout} className="text-white text-sm hover:text-yellow-300">
@@ -125,13 +100,13 @@ export default function Nav() {
                                 </button>
                             </div>
                         ) : (
-                            <Button variant="filled" size="sm" color="yellow" onClick={() => navigate('/adminlogin')}>
+                            <button onClick={() => navigate('/adminlogin')} className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold text-sm px-4 py-1.5 rounded-lg transition-colors">
                                 Sign In
-                            </Button>
+                            </button>
                         )}
                     </div>
                 </div>
-            </Collapse>
-        </Navbar>
+            )}
+        </nav>
     );
 }

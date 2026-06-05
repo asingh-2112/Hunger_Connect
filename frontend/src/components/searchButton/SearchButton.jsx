@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { Button } from "@material-tailwind/react";
 import DonationList from "../donationList/DonationList";
 
 const SearchButton = () => {
@@ -37,12 +36,12 @@ const SearchButton = () => {
                     <DonationList />
                 </DialogContent>
                 <DialogActions className="p-4">
-                    <Button 
+                    <button
                         onClick={() => setOpen(false)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
                     >
                         Close
-                    </Button>
+                    </button>
                 </DialogActions>
             </Dialog>
         </>

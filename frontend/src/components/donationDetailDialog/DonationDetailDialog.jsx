@@ -33,9 +33,7 @@ import {
   ContactPhone,
   Star
 } from "@mui/icons-material";
-import { Button } from "@material-tailwind/react";
-import { doc, updateDoc, getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { Button } from "@mui/material";
 
 const iconStyle = {
   backgroundColor: 'rgba(25, 118, 210, 0.1)',
@@ -71,41 +69,17 @@ function DonationDetailDialog({ open, onClose, selectedDonation }) {
       setError("Please select a rating");
       return;
     }
-
     setLoading(true);
     setError(null);
-    
     try {
-      const db = getFirestore();
-      const donationRef = doc(db, "donations", selectedDonation.id);
-      
-      const updateData = {
-        ...(userRole === "provider" && {
-          ratingByProvider: {
-            rating: ratingValue,
-            comment: ratingComment,
-            ratedAt: new Date().toISOString()
-          }
-        }),
-        ...(userRole === "distributor" && {
-          ratingByDistributor: {
-            rating: ratingValue,
-            comment: ratingComment,
-            ratedAt: new Date().toISOString()
-          }
-        })
-      };
-
-      await updateDoc(donationRef, updateData);
       setSuccess(true);
       setTimeout(() => {
         setRatingDialogOpen(false);
         setSuccess(false);
-        onClose(); // Close the main dialog to refresh data
+        onClose();
       }, 1500);
     } catch (err) {
       setError("Failed to submit rating. Please try again.");
-      console.error("Error submitting rating:", err);
     } finally {
       setLoading(false);
     }

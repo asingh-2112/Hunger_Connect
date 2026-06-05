@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Layout from "../../../components/layout/Layout";
-import { Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { toast } from "react-hot-toast";
@@ -73,13 +72,13 @@ function NgoDashboard() {
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link to="/createblog">
-                                <Button variant="gradient" color="teal" className="flex items-center gap-2 shadow-md">
+                                <button className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
                                     <Article fontSize="small" /> Create Blog
-                                </Button>
+                                </button>
                             </Link>
-                            <Button variant="gradient" color="red" className="shadow-md" onClick={handleLogout}>
+                            <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
                                 Logout
-                            </Button>
+                            </button>
                         </div>
                     </div>
 
@@ -118,9 +117,9 @@ function NgoDashboard() {
                             <div className="text-center py-8">
                                 <Fastfood className="text-4xl mx-auto text-gray-400 mb-2" />
                                 <Typography variant="h6" className="text-gray-500">No accepted donations yet</Typography>
-                                <Button variant="gradient" color="teal" className="mt-4" onClick={() => setOpen(true)}>
+                                <button onClick={() => setOpen(true)} className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-medium px-4 py-2 rounded-lg transition-colors">
                                     Search for donations
-                                </Button>
+                                </button>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -151,15 +150,12 @@ function NgoDashboard() {
                                                     <Typography variant="body2" className="font-medium text-teal-600">{donation.quantity}</Typography>
                                                 </div>
                                                 <Chip label={(donation.foodTypes || []).join(", ") || "Various"} color="primary" size="small" />
-                                                <Button
-                                                    variant="gradient"
-                                                    color="red"
-                                                    size="sm"
+                                                <button
                                                     onClick={(e) => openWithdrawDialog(donation.id, e)}
-                                                    className="shadow-sm"
+                                                    className="bg-red-500 hover:bg-red-600 text-white text-xs font-medium px-3 py-1 rounded-lg shadow-sm transition-colors"
                                                 >
                                                     Withdraw
-                                                </Button>
+                                                </button>
                                             </div>
                                         </div>
                                     </Card>
@@ -175,15 +171,14 @@ function NgoDashboard() {
                         <Typography className="mt-4">Are you sure you want to withdraw from this donation?</Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setConfirmOpen(false)} variant="outlined" color="gray">Cancel</Button>
-                        <Button
+                        <button onClick={() => setConfirmOpen(false)} className="border border-gray-400 text-gray-700 font-medium px-4 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
+                        <button
                             onClick={handleWithdrawDonation}
-                            variant="gradient"
-                            color="red"
                             disabled={withdrawMutation.isPending}
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1.5 rounded-lg disabled:opacity-60 transition-colors"
                         >
                             {withdrawMutation.isPending ? "Withdrawing..." : "Withdraw"}
-                        </Button>
+                        </button>
                     </DialogActions>
                 </Dialog>
 

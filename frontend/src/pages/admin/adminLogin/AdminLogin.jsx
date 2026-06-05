@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Button, Dialog, Input } from "@material-tailwind/react";
+import { Dialog, DialogContent } from "@mui/material";
 import { Eye, EyeOff } from "lucide-react";
 import LayoutRegLog from "../../../components/layoutRegLog/LayoutRegLog";
 import { useAuth } from "../../../hooks/useAuth";
@@ -86,22 +86,22 @@ export default function AdminLogin() {
                     </div>
 
                     <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-                        <Input
+                        <input
                             type="email"
-                            label="Email"
+                            placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                             required
                         />
 
                         <div className="relative">
-                            <Input
+                            <input
                                 type={showPassword ? "text" : "password"}
-                                label="Password"
+                                placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full p-2 border rounded"
+                                className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                             />
                             <button
                                 type="button"
@@ -112,13 +112,13 @@ export default function AdminLogin() {
                             </button>
                         </div>
 
-                        <Button
+                        <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 disabled:opacity-60"
+                            className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 disabled:opacity-60 transition-colors"
                         >
                             {loading ? "Logging in..." : "Login"}
-                        </Button>
+                        </button>
 
                         <div className="text-center text-sm">
                             <button
@@ -144,25 +144,27 @@ export default function AdminLogin() {
                 </div>
             </div>
 
-            <Dialog open={forgotPasswordDialog} handler={() => setForgotPasswordDialog(false)}>
-                <div className="p-6 space-y-4 bg-gray-900 text-white rounded-lg">
-                    <h3 className="text-xl font-semibold">Reset Password</h3>
-                    <Input
-                        type="email"
-                        label="Enter your email"
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                        className="w-full bg-gray-800 border-none text-white placeholder-gray-400"
-                        required
-                    />
-                    <Button
-                        onClick={handleForgotPassword}
-                        disabled={resetLoading}
-                        className="w-full bg-white text-gray-900 font-semibold py-2 rounded-lg shadow-lg hover:bg-gray-200 transition disabled:opacity-60"
-                    >
-                        {resetLoading ? "Sending..." : "Send Reset Link"}
-                    </Button>
-                </div>
+            <Dialog open={forgotPasswordDialog} onClose={() => setForgotPasswordDialog(false)}>
+                <DialogContent>
+                    <div className="p-2 space-y-4 bg-gray-900 text-white rounded-lg">
+                        <h3 className="text-xl font-semibold">Reset Password</h3>
+                        <input
+                            type="email"
+                            placeholder="Enter your email"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            required
+                        />
+                        <button
+                            onClick={handleForgotPassword}
+                            disabled={resetLoading}
+                            className="w-full bg-white text-gray-900 font-semibold py-2 rounded-lg shadow-lg hover:bg-gray-200 transition disabled:opacity-60"
+                        >
+                            {resetLoading ? "Sending..." : "Send Reset Link"}
+                        </button>
+                    </div>
+                </DialogContent>
             </Dialog>
         </LayoutRegLog>
     );
