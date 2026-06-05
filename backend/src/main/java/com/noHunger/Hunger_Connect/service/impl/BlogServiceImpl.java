@@ -77,7 +77,7 @@ public class BlogServiceImpl implements com.noHunger.Hunger_Connect.service.Blog
         if (!blogRepository.existsById(blogId)) {
             throw ApiException.notFound("Blog");
         }
-        boolean alreadyLiked = likeRepository.existsByBlogIdAndUserId(blogId, user.getId());
+        boolean alreadyLiked = likeRepository.existsByIdBlogIdAndIdUserId(blogId, user.getId());
         if (alreadyLiked) {
             likeRepository.deleteByBlogIdAndUserId(blogId, user.getId());
             blogRepository.decrementLikes(blogId);
@@ -134,7 +134,7 @@ public class BlogServiceImpl implements com.noHunger.Hunger_Connect.service.Blog
 
     private BlogResponse toResponse(Blog blog, User currentUser) {
         boolean liked = currentUser != null &&
-                likeRepository.existsByBlogIdAndUserId(blog.getId(), currentUser.getId());
+                likeRepository.existsByIdBlogIdAndIdUserId(blog.getId(), currentUser.getId());
         return BlogResponse.builder()
                 .id(blog.getId())
                 .authorId(blog.getAuthor().getId())

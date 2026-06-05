@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface BlogLikeRepository extends JpaRepository<BlogLikeRepository.BlogLike, BlogLikeRepository.BlogLikeId> {
 
-    boolean existsByBlogIdAndUserId(UUID blogId, UUID userId);
+    boolean existsByIdBlogIdAndIdUserId(UUID blogId, UUID userId);
 
     @Modifying
     @Query(value = "DELETE FROM blog_likes WHERE blog_id = :blogId AND user_id = :userId", nativeQuery = true)
