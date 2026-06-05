@@ -1,165 +1,125 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import myContext from '../../context/data/myContext';
 import { useParams } from 'react-router';
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
-import { fireDb } from '../../firebase/FirebaseConfig';
 import Layout from '../../components/layout/Layout';
 import Loader from '../../components/loader/Loader';
 import Comment from '../../components/comment/Comment';
 import toast from 'react-hot-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { blogApi } from '../../api/blog';
+import { useAuth } from '../../hooks/useAuth';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 
 function BlogInfo() {
-  const context = useContext(myContext);
-  const { mode, setloading, loading } = context;
+    const context = useContext(myContext);
+    const { mode } = context;
+    const { id } = useParams();
+    const queryClient = useQueryClient();
+    const { user, isAuthenticated } = useAuth();
 
-  const params = useParams()
+    const [commentText, setCommentText] = useState('');
 
-  //* getBlogs State 
-  const [getBlogs, setGetBlogs] = useState();
+    const { data: blog, isLoading } = useQuery({
+        queryKey: ['blog', id],
+        queryFn: () => blogApi.getById(id),
+        enabled: !!id,
+    });
 
-  const getAllBlogs = async () => {
-    setloading(true);
-    try {
-      const productTemp = await getDoc(doc(fireDb, "blogPost", params.id))
-      if (productTemp.exists()) {
-        setGetBlogs(productTemp.data());
-      } else {
-        console.log("Document does not exist")
-      }
-      setloading(false)
-    } catch (error) {
-      console.log(error)
-      setloading(false)
-    }
-  }
+    const { data: commentsPage, refetch: refetchComments } = useQuery({
+        queryKey: ['blog-comments', id],
+        queryFn: () => blogApi.getComments(id, { page: 0, size: 50 }),
+        enabled: !!id,
+    });
 
-  // console.log(getBlogs)
+    const comments = commentsPage?.content || [];
 
-  useEffect(() => {
-    getAllBlogs();
-    window.scrollTo(0, 0)
-  }, []);
+    const likeMutation = useMutation({
+        mutationFn: () => blogApi.toggleLike(id),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blog', id] }),
+    });
 
+    const addCommentMutation = useMutation({
+        mutationFn: (text) => blogApi.addComment(id, text),
+        onSuccess: () => {
+            toast.success('Comment added successfully');
+            setCommentText('');
+            refetchComments();
+        },
+        onError: () => toast.error('Failed to add comment. Please log in first.'),
+    });
 
-  //* Create markup function 
-  function createMarkup(c) {
-    return { __html: c };
-  }
+    const handleAddComment = () => {
+        if (!commentText.trim()) return toast.error('Please write a comment');
+        addCommentMutation.mutate(commentText.trim());
+    };
 
-  const [fullName, setFullName] = useState('');
-  const [commentText, setCommentText] = useState('');
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
-    const addComment = async () => {
-      const commentRef = collection(fireDb, "blogPost/" + `${params.id}/` + "comment")
-      try {
-        await addDoc(
-          commentRef, {
-          fullName,
-          commentText,
-          time: Timestamp.now(),
-          date: new Date().toLocaleString(
-            "en-US",
-            {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            }
-          )
-        })
-        toast.success('Comment Add Successfully');
-        setFullName("")
-        setCommentText("")
-      } catch (error) {
-        console.log(error)
-      }
-    }
+    return (
+        <Layout>
+            <section className="rounded-lg h-full overflow-hidden max-w-4xl mx-auto px-4">
+                <div className="py-4 lg:py-8">
+                    {isLoading ? (
+                        <Loader />
+                    ) : blog ? (
+                        <div>
+                            {blog.imageUrl && (
+                                <img
+                                    alt="blog cover"
+                                    className="mb-3 rounded-lg h-full w-full object-cover"
+                                    src={blog.imageUrl}
+                                />
+                            )}
 
-    const [allComment, setAllComment] = useState([]);
+                            <div className="flex justify-between items-center mb-3">
+                                <h1
+                                    style={{ color: mode === 'dark' ? 'white' : 'black' }}
+                                    className="text-xl md:text-2xl lg:text-2xl font-semibold"
+                                >
+                                    {blog.caption}
+                                </h1>
+                                <p style={{ color: mode === 'dark' ? 'white' : 'black' }}>
+                                    {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                                        month: 'short', day: '2-digit', year: 'numeric'
+                                    })}
+                                </p>
+                            </div>
 
-  const getcomment = async () => {
-    try {
-      const q = query(
-        collection(fireDb, "blogPost/" + `${params.id}/` + "comment/"),
-        orderBy('time')
-      );
-      const data = onSnapshot(q, (QuerySnapshot) => {
-        let productsArray = [];
-        QuerySnapshot.forEach((doc) => {
-          productsArray.push({ ...doc.data(), id: doc.id });
-        });
-        setAllComment(productsArray)
-        console.log(productsArray)
-      });
-      return () => data;
-    } catch (error) {
-      console.log(error)
-    }
-  }
+                            <div className={`border-b mb-5 ${mode === 'dark' ? 'border-gray-600' : 'border-gray-400'}`} />
 
-  useEffect(() => {
-    getcomment();
-    window.scrollTo(0, 0)
-  }, []);
+                            <div className="flex items-center gap-3 mb-5">
+                                <button
+                                    onClick={() => isAuthenticated ? likeMutation.mutate() : toast.error('Please log in to like')}
+                                    className="flex items-center gap-1 text-sm"
+                                    style={{ color: mode === 'dark' ? 'white' : 'black' }}
+                                >
+                                    {blog.likedByMe
+                                        ? <Favorite className="text-red-500" />
+                                        : <FavoriteBorder className="text-gray-400" />
+                                    }
+                                    <span>{blog.likesCount || 0}</span>
+                                </button>
+                                <span style={{ color: mode === 'dark' ? 'gray' : 'gray' }} className="text-sm">
+                                    By {blog.authorName || 'Anonymous'}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-center text-gray-500">Blog not found.</p>
+                    )}
 
-
-  return (
-    <Layout>
-      <section className="rounded-lg h-full overflow-hidden max-w-4xl mx-auto px-4 ">
-        <div className=" py-4 lg:py-8">
-          {loading ?
-            <Loader />
-            :
-            <div >
-                {/* Thumbnail  */}
-                <img alt="content" className="mb-3 rounded-lg h-full w-full"
-                  src={getBlogs?.thumbnail}
-                />
-                {/* title And date  */}
-                <div className="flex justify-between items-center mb-3">
-                  <h1 style={{ color: mode === 'dark' ? 'white' : 'black' }}
-                    className=' text-xl md:text-2xl lg:text-2xl font-semibold'>
-                    {getBlogs?.blogs?.title}
-                  </h1>
-                  <p style={{ color: mode === 'dark' ? 'white' : 'black' }}>
-                    {getBlogs?.date}
-                  </p>
+                    <Comment
+                        addComment={handleAddComment}
+                        commentText={commentText}
+                        setcommentText={setCommentText}
+                        allComment={comments}
+                        isLoading={addCommentMutation.isPending}
+                        mode={mode}
+                    />
                 </div>
-                <div
-                  className={`border-b mb-5 ${mode === 'dark' ?
-                        'border-gray-600' : 'border-gray-400'}`}
-                />
-
-                {/* blog Content  */}
-                <div className="content">
-                <p className={`text-lg ${mode === 'dark' ? 'text-[#7efff5]' : 'text-black'}`}>
-                  {getBlogs?.blogs?.content}
-                </p>
-              </div>
-
-            </div>
-          }
-
-
-        <Comment
-   addComment={addComment}
-   commentText={commentText}
-   setcommentText={setCommentText}
-   allComment={allComment}
-   fullName={fullName}
-   setFullName={setFullName}
-/>
-   </div>
-      </section>
-    </Layout>
-  )
+            </section>
+        </Layout>
+    );
 }
 
-export default BlogInfo
-
-
-
-{/* <div className="content">
-                <p className={`text-lg ${mode === 'dark' ? 'text-[#7efff5]' : 'text-black'}`}>
-                  {blog.content}
-                </p>
-              </div> */}
+export default BlogInfo;
