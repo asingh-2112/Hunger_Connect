@@ -35,7 +35,7 @@ public class Donation {
     private String[] foodTypes;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "veg_non_veg", columnDefinition = "veg_type", nullable = false)
+    @Column(name = "veg_non_veg", nullable = false)
     private VegType vegNonVeg;
 
     @Column(nullable = false)
@@ -65,7 +65,7 @@ public class Donation {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "donation_status", nullable = false)
+    @Column(nullable = false)
     @Builder.Default
     private DonationStatus status = DonationStatus.PENDING;
 

@@ -38,11 +38,11 @@ public class User implements UserDetails {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "user_role", nullable = false)
+    @Column(nullable = false)
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "donor_type", columnDefinition = "donor_type")
+    @Column(name = "donor_type")
     private DonorType donorType;
 
     @Column(name = "organization_name")
