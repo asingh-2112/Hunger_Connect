@@ -35,6 +35,7 @@ public class Donation {
     private String[] foodTypes;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "veg_non_veg", nullable = false)
     private VegType vegNonVeg;
 
@@ -65,6 +66,7 @@ public class Donation {
     private String message;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false)
     @Builder.Default
     private DonationStatus status = DonationStatus.PENDING;
