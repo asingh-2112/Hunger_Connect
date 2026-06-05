@@ -1,19 +1,37 @@
 import React, { useState } from "react";
 import Layout from "../../../components/layout/Layout";
 import { Link, useNavigate } from "react-router-dom";
-import { FiPlusCircle } from "react-icons/fi";
-import { FaUserCircle } from "react-icons/fa";
 import PlusButton from "../../../components/plusButton/PlusButton";
 import CreateDonation from "../../../components/createDonation/CreateDonation";
 import { toast } from "react-hot-toast";
 import DonationDetailDialog from "../../../components/donationDetailDialog/DonationDetailDialog";
-import { Card, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Chip, Avatar } from "@mui/material";
-import { Event, Fastfood, Delete, Article, Scale } from "@mui/icons-material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { donationApi } from "../../../api/donation";
 import { useAuth } from "../../../hooks/useAuth";
+import moment from "moment";
 
-const STATUS_COLOR = { PENDING: "warning", ACCEPTED: "success", REJECTED: "error", COMPLETED: "default" };
+const STATUS_STYLES = {
+    PENDING:   "bg-amber-100 text-amber-700",
+    ACCEPTED:  "bg-green-100 text-green-700",
+    REJECTED:  "bg-red-100 text-red-700",
+    COMPLETED: "bg-slate-100 text-slate-600",
+};
+
+const STATUS_BAR = {
+    ACCEPTED:  "border-green-500",
+    COMPLETED: "border-brand-500",
+    REJECTED:  "border-red-500",
+    PENDING:   "border-amber-400",
+};
+
+function StatCard({ value, label, color }) {
+    return (
+        <div className={`card p-4 text-center ${color}`}>
+            <p className="text-2xl font-bold text-slate-900">{value}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+        </div>
+    );
+}
 
 function DonorDashboard() {
     const navigate = useNavigate();
@@ -21,7 +39,7 @@ function DonorDashboard() {
     const { user, logout } = useAuth();
 
     const [open, setOpen] = useState(false);
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmId, setConfirmId] = useState(null);
     const [selectedDonation, setSelectedDonation] = useState(null);
     const [donationDialogOpen, setDonationDialogOpen] = useState(false);
 
@@ -34,12 +52,10 @@ function DonorDashboard() {
         mutationFn: (id) => donationApi.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["donations"] });
-            toast.success("Donation deleted successfully!");
-            setConfirmOpen(false);
+            toast.success("Donation deleted");
+            setConfirmId(null);
         },
-        onError: (err) => {
-            toast.error(err.response?.data?.message || "Failed to delete donation.");
-        },
+        onError: (err) => toast.error(err.response?.data?.message || "Failed to delete"),
     });
 
     const donations = donationsPage?.content || [];
@@ -50,151 +66,135 @@ function DonorDashboard() {
         navigate("/");
     };
 
-    const openDeleteDialog = (e, donation) => {
-        e.stopPropagation();
-        setSelectedDonation(donation);
-        setConfirmOpen(true);
-    };
-
-    const handleDeleteDonation = () => {
-        if (!selectedDonation) return;
-        deleteMutation.mutate(selectedDonation.id);
-    };
+    const stats = [
+        { label: "Total",     value: donations.length },
+        { label: "Pending",   value: donations.filter(d => d.status === "PENDING").length },
+        { label: "Accepted",  value: donations.filter(d => d.status === "ACCEPTED").length },
+        { label: "Completed", value: donations.filter(d => d.status === "COMPLETED").length },
+    ];
 
     return (
         <Layout>
-            <div className="py-8 px-4 max-w-full mx-auto">
-                <Card className="p-6 mb-8 rounded-xl shadow-sm bg-gradient-to-br from-white to-blue-50 border border-blue-100">
-                    <div className="flex flex-col md:flex-row items-center gap-6">
-                        <Avatar className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-600">
-                            <FaUserCircle className="text-4xl text-white" />
-                        </Avatar>
-                        <div className="flex-1 text-center md:text-left">
-                            <Typography variant="h4" className="font-bold text-gray-800">{user?.name}</Typography>
-                            <Typography variant="subtitle1" className="text-blue-600">{user?.role} Donor</Typography>
-                            <Typography variant="body2" className="mt-1 text-gray-600">{user?.email}</Typography>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Link to="/createblog">
-                                <button className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
-                                    <Article fontSize="small" /> Create Blog
+            <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto space-y-8">
+
+                    {/* Profile card */}
+                    <div className="card p-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-5">
+                            <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-2xl flex-shrink-0 overflow-hidden">
+                                {user?.profileImageUrl
+                                    ? <img src={user.profileImageUrl} alt={user.name} className="w-full h-full object-cover" />
+                                    : user?.name?.charAt(0)?.toUpperCase() || 'D'
+                                }
+                            </div>
+                            <div className="flex-1 text-center sm:text-left">
+                                <h1 className="text-xl font-bold text-slate-900">{user?.name}</h1>
+                                <p className="text-sm text-brand-600 font-medium">Food Provider</p>
+                                <p className="text-sm text-slate-500">{user?.email}</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <Link to="/createblog" className="btn-secondary text-sm">
+                                    + Write Story
+                                </Link>
+                                <button onClick={handleLogout} className="btn-ghost text-red-500 hover:bg-red-50">
+                                    Logout
                                 </button>
-                            </Link>
-                            <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition-colors">
-                                Logout
-                            </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mt-4">
-                        {[
-                            { label: "Total", value: donations.length, cls: "blue" },
-                            { label: "Accepted", value: donations.filter(d => d.status === "ACCEPTED").length, cls: "green" },
-                            { label: "Pending", value: donations.filter(d => d.status === "PENDING").length, cls: "yellow" },
-                            { label: "Completed", value: donations.filter(d => d.status === "COMPLETED").length, cls: "purple" },
-                        ].map(({ label, value, cls }) => (
-                            <div key={label} className={`p-3 rounded-lg bg-${cls}-100 shadow-sm`}>
-                                <Typography variant="h5" className={`font-bold text-${cls}-800`}>{value}</Typography>
-                                <Typography variant="body2" className={`text-${cls}-600`}>{label}</Typography>
-                            </div>
+                    {/* Stat cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {stats.map(({ label, value }) => (
+                            <StatCard key={label} label={label} value={value} />
                         ))}
                     </div>
-                </Card>
 
-                <Card className="rounded-xl shadow-lg max-w-7xl mx-auto bg-gradient-to-br from-white to-blue-50 border border-blue-100">
-                    <div className="p-6 bg-gray-100">
-                        <Typography variant="h5" className="font-bold mb-4 text-blue-600">Your Donations</Typography>
+                    {/* Donations list */}
+                    <div className="card overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h2 className="font-bold text-slate-900">Your Donations</h2>
+                            <button onClick={() => setOpen(true)} className="btn-primary text-sm">
+                                + New Donation
+                            </button>
+                        </div>
 
                         {isLoading ? (
-                            <div className="flex justify-center py-8">
-                                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500" />
+                            <div className="p-8 flex justify-center">
+                                <div className="w-8 h-8 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
                             </div>
                         ) : donations.length === 0 ? (
-                            <div className="text-center py-8">
-                                <Fastfood className="text-4xl mx-auto text-gray-400 mb-2" />
-                                <Typography variant="h6" className="text-gray-500">No donations yet</Typography>
-                                <button onClick={() => setOpen(true)} className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-lg transition-colors">
-                                    Make your first donation
+                            <div className="p-12 text-center">
+                                <p className="text-slate-400 text-sm mb-4">No donations yet. Start making an impact!</p>
+                                <button onClick={() => setOpen(true)} className="btn-primary">
+                                    Make Your First Donation
                                 </button>
                             </div>
                         ) : (
-                            <div className="space-y-4">
-                                {donations.map((donation, index) => (
-                                    <Card
+                            <ul className="divide-y divide-slate-100">
+                                {donations.map((donation, i) => (
+                                    <li
                                         key={donation.id}
-                                        className={`p-4 rounded-lg cursor-pointer hover:shadow-lg border-l-4 ${
-                                            donation.status === "ACCEPTED" ? "border-green-500" :
-                                            donation.status === "COMPLETED" ? "border-blue-500" :
-                                            donation.status === "REJECTED" ? "border-red-500" : "border-yellow-500"
-                                        }`}
+                                        className={`flex items-center gap-4 px-6 py-4 cursor-pointer hover:bg-slate-50 transition-colors border-l-4 ${STATUS_BAR[donation.status] || "border-slate-200"}`}
                                         onClick={() => { setSelectedDonation(donation); setDonationDialogOpen(true); }}
                                     >
-                                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                            <div className="flex items-center gap-4">
-                                                <Avatar className="bg-blue-100 text-blue-800">{index + 1}</Avatar>
-                                                <div>
-                                                    <Typography variant="subtitle1" className="font-medium">{donation.city}</Typography>
-                                                    <div className="flex items-center gap-2">
-                                                        <Event fontSize="small" className="text-gray-400" />
-                                                        <Typography variant="body2" className="text-gray-600">
-                                                            {donation.pickupDate} • {donation.pickupTime}
-                                                        </Typography>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <div className="flex items-center gap-1">
-                                                    <Scale fontSize="small" className="text-blue-500" />
-                                                    <Typography variant="body2" className="font-medium text-blue-600">
-                                                        {donation.quantity}
-                                                    </Typography>
-                                                </div>
-                                                <Chip
-                                                    label={donation.status}
-                                                    color={STATUS_COLOR[donation.status] || "default"}
-                                                    size="small"
-                                                />
-                                                <button
-                                                    onClick={(e) => openDeleteDialog(e, donation)}
-                                                    className="bg-red-500 hover:bg-red-600 text-white text-xs font-medium px-3 py-1 rounded-lg shadow-sm transition-colors"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
+                                        <span className="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                            {i + 1}
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-800 truncate">{donation.city}</p>
+                                            <p className="text-xs text-slate-400">
+                                                {moment(donation.pickupDate).format("MMM D, YYYY")} · {donation.pickupTime} · {donation.quantity}
+                                            </p>
                                         </div>
-                                    </Card>
+                                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[donation.status] || "bg-slate-100 text-slate-600"}`}>
+                                            {donation.status}
+                                        </span>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setConfirmId(donation.id); }}
+                                            className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
+                                            aria-label="Delete"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </li>
                                 ))}
-                            </div>
+                            </ul>
                         )}
                     </div>
-                </Card>
-
-                <PlusButton onClick={() => setOpen(true)} />
-                <CreateDonation open={open} setOpen={setOpen} />
-
-                <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-                    <DialogTitle className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">Confirm Deletion</DialogTitle>
-                    <DialogContent>
-                        <Typography className="mt-4">Are you sure you want to delete this donation?</Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <button onClick={() => setConfirmOpen(false)} className="border border-gray-400 text-gray-700 font-medium px-4 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
-                        <button
-                            onClick={handleDeleteDonation}
-                            disabled={deleteMutation.isPending}
-                            className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1.5 rounded-lg disabled:opacity-60 transition-colors"
-                        >
-                            {deleteMutation.isPending ? "Deleting..." : "Delete"}
-                        </button>
-                    </DialogActions>
-                </Dialog>
-
-                <DonationDetailDialog
-                    open={donationDialogOpen}
-                    onClose={() => setDonationDialogOpen(false)}
-                    selectedDonation={selectedDonation}
-                />
+                </div>
             </div>
+
+            <PlusButton onClick={() => setOpen(true)} />
+            <CreateDonation open={open} setOpen={setOpen} />
+
+            {/* Delete confirm modal */}
+            {confirmId && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="card p-6 w-full max-w-sm shadow-xl">
+                        <h3 className="text-lg font-bold text-slate-900 mb-2">Delete Donation?</h3>
+                        <p className="text-sm text-slate-500 mb-6">This action cannot be undone.</p>
+                        <div className="flex gap-3 justify-end">
+                            <button onClick={() => setConfirmId(null)} className="btn-secondary">Cancel</button>
+                            <button
+                                onClick={() => deleteMutation.mutate(confirmId)}
+                                disabled={deleteMutation.isPending}
+                                className="btn-danger disabled:opacity-60"
+                            >
+                                {deleteMutation.isPending ? "Deleting…" : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <DonationDetailDialog
+                open={donationDialogOpen}
+                onClose={() => setDonationDialogOpen(false)}
+                selectedDonation={selectedDonation}
+            />
         </Layout>
     );
 }

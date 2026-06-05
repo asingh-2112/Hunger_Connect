@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-input[type="password"]::-ms-reveal {
-    display: none;
+@layer base {
+  html {
+    scroll-behavior: smooth;
   }
+
+  body {
+    @apply font-sans text-slate-800 bg-white antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-semibold tracking-tight text-slate-900;
+  }
+
+  /* Article-style headings use serif */
+  .article-title {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  /* Reusable button primitives */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 text-white font-medium text-sm hover:bg-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-slate-600 font-medium text-sm hover:bg-slate-100 transition-colors;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-red-500 text-white font-medium text-sm hover:bg-red-600 transition-colors;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm;
+  }
+
+  /* Clean form inputs */
+  .input {
+    @apply w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition;
+  }
+
+  /* Section heading */
+  .section-title {
+    @apply text-2xl font-bold text-slate-900;
+  }
+}
+
+/* Hide MS Edge password reveal button */
+input[type="password"]::-ms-reveal {
+  display: none;
+}

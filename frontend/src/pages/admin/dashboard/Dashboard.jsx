@@ -1,184 +1,132 @@
-import React, { useContext, useEffect } from 'react'
-import Layout from '../../../components/layout/Layout'
-import myContext from '../../../context/data/myContext';
+import React, { useEffect } from 'react';
+import Layout from '../../../components/layout/Layout';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { blogApi } from '../../../api/blog';
+import { useAuth } from '../../../hooks/useAuth';
+import { toast } from 'react-hot-toast';
+import moment from 'moment';
 
 function Dashboard() {
-    const context = useContext(myContext);
-    const { mode, getAllBlog, deleteBlogs } = context;
-    const navigate=useNavigate();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { user, logout } = useAuth();
 
-    console.log(getAllBlog)
+    const { data: blogsPage, isLoading } = useQuery({
+        queryKey: ['blogs', 'my'],
+        queryFn: () => blogApi.getMy({ page: 0, size: 50 }),
+    });
 
-    const logout=()=>{
-        localStorage.clear();
+    const deleteMutation = useMutation({
+        mutationFn: (id) => blogApi.delete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['blogs'] });
+            toast.success('Blog deleted');
+        },
+        onError: () => toast.error('Failed to delete blog'),
+    });
+
+    const handleLogout = async () => {
+        await logout();
+        toast.success('Logged out');
         navigate('/');
-    }
+    };
 
-    useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+    useEffect(() => { window.scrollTo(0, 0); }, []);
+
+    const blogs = blogsPage?.content || [];
+
     return (
         <Layout>
-            <div className="py-10">
-                <div
-                    className="flex flex-wrap justify-start items-center lg:justify-center gap-2 lg:gap-10 px-4 lg:px-0 mb-8">
-                    <div className="left">
-                        <img
-                            className=" w-40 h-40  object-cover rounded-full border-2 border-pink-600 p-1"
-                            src={'https://cdn-icons-png.flaticon.com/128/3135/3135715.png'} alt="profile"
-                        />
-                    </div>
-                    <div className="right">
-                        <h1
-                            className='text-center font-bold text-2xl mb-2'
-                            style={{ color: mode === 'dark' ? 'white' : 'black' }}
-                        >
-                            Kamal Nayan Upadhyay
-                        </h1>
+            <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-5xl mx-auto space-y-8">
 
-                        <h2
-                            style={{ color: mode === 'dark' ? 'white' : 'black' }} className="font-semibold">
-                            Software Developer
-                        </h2>
-                        <h2
-                            style={{ color: mode === 'dark' ? 'white' : 'black' }} className="font-semibold">knupadhyay784@gmail.com
-                        </h2>
-                        <h2
-                            style={{ color: mode === 'dark' ? 'white' : 'black' }} className="font-semibold">
-                            <span>Total Blog : </span>  15
-                        </h2>
-                        <div className=" flex gap-2 mt-2">
-                            <Link to={'/createblog'}>
-                                <div className=" mb-2">
-                                    <button
-                                        style={{
-                                            background: mode === 'dark' ? 'rgb(226, 232, 240)' : 'rgb(30, 41, 59)',
-                                            color: mode === 'dark' ? 'black' : 'white'
-                                        }}
-                                        className='px-8 py-2 rounded-lg font-medium'
-                                    >
-                                        Create Blog
-                                    </button>
-                                </div>
-                            </Link>
-                            <div className="mb-2">
-                                <button
-                                    onClick={logout}
-                                    style={{
-                                        background: mode === 'dark' ? 'rgb(226, 232, 240)' : 'rgb(30, 41, 59)',
-                                        color: mode === 'dark' ? 'black' : 'white'
-                                    }}
-                                    className='px-8 py-2 rounded-lg font-medium'
-                                >
+                    {/* Admin profile card */}
+                    <div className="card p-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-5">
+                            <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-2xl flex-shrink-0 overflow-hidden">
+                                {user?.profileImageUrl
+                                    ? <img src={user.profileImageUrl} alt={user.name} className="w-full h-full object-cover" />
+                                    : user?.name?.charAt(0)?.toUpperCase() || 'A'
+                                }
+                            </div>
+                            <div className="flex-1 text-center sm:text-left">
+                                <h1 className="text-xl font-bold text-slate-900">{user?.name || 'Admin'}</h1>
+                                <p className="text-sm text-brand-600 font-medium">Administrator</p>
+                                <p className="text-sm text-slate-500">{user?.email}</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <Link to="/createblog" className="btn-secondary text-sm">
+                                    + New Blog
+                                </Link>
+                                <button onClick={handleLogout} className="btn-ghost text-red-500 hover:bg-red-50">
                                     Logout
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Line  */}
-                <hr className={`border-2
-                 ${mode === 'dark'
-                     ? 'border-gray-300'
-                     : 'border-gray-400'}` 
-                 }
-                />
-
-                {/* Table  */}
-                <div className="">
-                    <div className=' container mx-auto px-4 max-w-7xl my-5' >
-                        <div className="relative overflow-x-auto shadow-md sm:rounded-xl">
-                            {/* table  */}
-                            <table className="w-full border-2 border-white shadow-md text-sm text-left text-gray-500 dark:text-gray-400" >
-                                {/* thead  */}
-                                <thead
-                                    style={{
-                                        background: mode === 'dark'
-                                            ? 'white'
-                                            : 'rgb(30, 41, 59)'
-                                    }}
-                                    className="text-xs ">
-                                    <tr>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            S.No
-                                        </th>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            Thumbnail
-                                        </th>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            Title
-                                        </th>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            Category
-                                        </th>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            Date
-                                        </th>
-                                        <th style={{ color: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }} scope="col" className="px-6 py-3">
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                                {/* tbody  */}
-                                {getAllBlog.length > 0
-                                    ?
-                                    <>
-                                        {getAllBlog.map((item, index) => {
-                                            const {thumbnail, date, id} = item;
-                                            console.log(item)
-                                            return (
-                                                <tbody>
-                                                    <tr className=" border-b-2" style={{ background: mode === 'dark' ? 'rgb(30, 41, 59)' : 'white' }}>
-                                                        {/* S.No   */}
-                                                        <td style={{ color: mode === 'dark' ? 'white' : 'black' }} className="px-6 py-4">
-                                                            {index + 1}.
-                                                        </td>
-                                                        {/* Blog Thumbnail  */}
-                                                        <th style={{ color: mode === 'dark' ? 'white' : 'black' }} scope="row" className="px-6 py-4 font-medium ">
-                                                            {/* thumbnail  */}
-                                                            <img className='w-16 rounded-lg' 
-                                                            src={thumbnail} alt="thumbnail" />
-                                                        </th>
-                                                        {/* Blog Title  */}
-                                                        <td style={{ color: mode === 'dark' ? 'white' : 'black' }} className="px-6 py-4">
-                                                            {item.blogs.title}
-                                                        </td>
-                                                        {/* Blog Category  */}
-                                                        <td style={{ color: mode === 'dark' ? 'white' : 'black' }} className="px-6 py-4">
-                                                            {item.blogs.category}
-                                                        </td>
-                                                        {/* Blog Date  */}
-                                                        <td style={{ color: mode === 'dark' ? 'white' : 'black' }} className="px-6 py-4">
-                                                            {date}
-                                                        </td>
-                                                        {/* Delete Blog  */}
-                                                        <td 
-                                                        onClick={()=> deleteBlogs(id)}
-                                                        style={{ color: mode === 'dark' ? 'white' : 'black' }} className="px-6 py-4">
-                                                            <button className=' px-4 py-1 rounded-lg text-white font-bold bg-red-500'>
-                                                                Delete
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            )
-                                        })}</>
-                                    :
-                                    <>
-                                        <h1>Not Found</h1>
-                                    </>
-                                }
-                            </table>
+                    {/* Blogs table */}
+                    <div className="card overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100">
+                            <h2 className="font-bold text-slate-900">All Blogs ({blogs.length})</h2>
                         </div>
-                    </div>
 
+                        {isLoading ? (
+                            <div className="p-8 flex justify-center">
+                                <div className="w-8 h-8 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+                            </div>
+                        ) : blogs.length === 0 ? (
+                            <div className="p-10 text-center text-slate-400 text-sm">No blogs yet.</div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="bg-slate-50 text-left">
+                                            <th className="px-6 py-3 font-medium text-slate-500 text-xs uppercase tracking-wide">#</th>
+                                            <th className="px-6 py-3 font-medium text-slate-500 text-xs uppercase tracking-wide">Thumbnail</th>
+                                            <th className="px-6 py-3 font-medium text-slate-500 text-xs uppercase tracking-wide">Title</th>
+                                            <th className="px-6 py-3 font-medium text-slate-500 text-xs uppercase tracking-wide">Date</th>
+                                            <th className="px-6 py-3 font-medium text-slate-500 text-xs uppercase tracking-wide">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {blogs.map((blog, i) => (
+                                            <tr key={blog.id} className="hover:bg-slate-50 transition-colors">
+                                                <td className="px-6 py-3 text-slate-500">{i + 1}</td>
+                                                <td className="px-6 py-3">
+                                                    {blog.imageUrl && (
+                                                        <img src={blog.imageUrl} alt="thumb" className="w-12 h-9 rounded object-cover" />
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-3 text-slate-800 font-medium max-w-xs">
+                                                    <Link to={`/bloginfo/${blog.id}`} className="hover:text-brand-600 transition-colors line-clamp-2">
+                                                        {blog.caption}
+                                                    </Link>
+                                                </td>
+                                                <td className="px-6 py-3 text-slate-400 whitespace-nowrap">
+                                                    {moment(blog.createdAt).format('MMM D, YYYY')}
+                                                </td>
+                                                <td className="px-6 py-3">
+                                                    <button
+                                                        onClick={() => deleteMutation.mutate(blog.id)}
+                                                        disabled={deleteMutation.isPending}
+                                                        className="btn-danger text-xs py-1.5 px-3 disabled:opacity-60"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </Layout>
-    )
+    );
 }
 
-export default Dashboard
+export default Dashboard;
