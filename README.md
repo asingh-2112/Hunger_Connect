@@ -2,6 +2,8 @@
 
 Full-stack food donation platform connecting donors with NGOs.
 
+**Host URL:** [https://hunger-connect-three.vercel.app/](https://hunger-connect-three.vercel.app/)
+
 ```
 Hunger_Connect/
 ├── backend/    # Spring Boot 3.x REST API (Java 21 + PostgreSQL)
