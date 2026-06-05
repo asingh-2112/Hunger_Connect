@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
+    "axios": "^1.7.0",
     "@ckeditor/ckeditor5-build-classic": "^44.2.1",
     "@ckeditor/ckeditor5-build-decoupled-document": "^44.2.1",
     "@ckeditor/ckeditor5-react": "^9.5.0",
